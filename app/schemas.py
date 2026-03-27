@@ -1,13 +1,25 @@
 from pydantic import BaseModel
 
 
-class ChatInput(BaseModel):
+class ChatMessageInput(BaseModel):
     message: str
     stress_score: int
     risk_level: str
-    avg_sleep: float
-    screen_time: float
-    activity: str
+    sleepHours: float
+    screenTime: float
+    stepCount: int
+    aqi: int
+    mood: str
+    chat_history: str = ""
+
+
+class StartChatInput(BaseModel):
+    message: str
+    stress_score: int
+    risk_level: str
+    sleepHours: float
+    screenTime: float
+    stepCount: int
     aqi: int
     mood: str
     chat_history: str = ""

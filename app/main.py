@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.schemas import ChatInput, EndChatInput
+from app.schemas import ChatMessageInput, StartChatInput, EndChatInput
 from app.chat_service import (
     generate_chat_response,
     update_stress,
@@ -77,8 +77,31 @@ def home():
 
 # 💬 CHAT
 @app.post("/chat")
-def chat(input: ChatInput):
+def chat(input: ChatMessageInput):
 
+    # Chat (ongoing message) - uses provided fields but no external summary
+    reply = generate_chat_response(
+        input.message,
+        input.dict(),
+        input.chat_history,
+        ""  # no summary during in-chat messages
+    )
+
+    new_stress = update_stress(input.message, input.stress_score)
+    risk = classify_risk(new_stress)
+
+    return {
+        "reply": reply,
+        "updated_stress_score": new_stress,
+        "updated_risk_level": risk
+    }
+
+
+# START CHAT (new)
+@app.post("/startchat")
+def start_chat(input: StartChatInput):
+
+    # Initial conversation start; client may include a summary for memory-based replies
     reply = generate_chat_response(
         input.message,
         input.dict(),
